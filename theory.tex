@@ -1,0 +1,141 @@
+\documentclass{article}
+\usepackage{import}
+\import{../../}{preamble.tex}
+\import{../}{commands.tex}
+\import{./}{commands.tex}
+
+\begin{document}
+  \section{Maximum Likelihood Method}
+  \begin{definition}
+    A \textbf{(statistical) model} is a parametric family \(\M_\Theta = \{P_\theta:\:\theta\in \Theta\}\) of probability measures of some fixed measurable space~\(\XX\), where~\(\Theta\) is some nonempty set.
+  \end{definition}
+  In most examples we consider,~\(\XX \) is a subset of \( \R^m\) for some \(m \in\N\) with Lebegsue measure or counting measure. We will assume hereafter every~\(P_\theta\in M_\Theta \) has a density function \(p_\theta:\:\XX\to [0,1]\) with respect to the chosen measure~\(\mu\) on~\(\XX\):
+  \[
+    P_\Theta\{A\} = \int_A p_\theta(x)\,d\mu(x)
+  \]
+  for all measurable sets~\(A \subseteq \XX.\) 
+
+  \begin{definition}
+    A \textbf{sample} for a model \(\M_\Theta\) is a family of random variables~\(X = (\X{i})_{i \le n}\) that have the same distribution~\(P_\theta\in \M_\Theta\) for all~\(i \le n.\)
+  \end{definition}
+
+  \noindent\textbf{Problem.} Fix a model~\(\M_\Theta.\) Given a sample \(X\) with distribution~\(P_\theta\in\M_\Theta,\) find~\(\theta\).
+
+  \begin{definition}
+    Let~\(\M_\Theta\) be a model. The \textbf{likelihood function} of a sample \(X\) of size~\(n\) is the mapping~\(L_X:\:\Theta \to [0,1]\), given by
+    
+    \[
+      L_X(\theta) = \prod_{i=1}^n p_\theta\left(\X{i}\right),\quad \theta\in \Theta.
+    \]
+
+    The \textbf{log-likelohood function} of \(X\) is \(\ell_X:\: \Theta \to (-\infty,0],\) \(\ell_X(\theta) = \ln L_x(\theta)\) for~\(\theta\in \Theta.\)
+
+  \end{definition}
+
+  \begin{definition}
+    Given a model~\(\M_\Theta\) and a sample \(X\), the \textbf{maximum likelihood estimator} is the random variable
+    \[
+      \r\theta := \argmax_{\theta\in \Theta} \ell_X(\theta) = \argmax_{\theta\in \Theta} L_X(\theta).
+    \]
+    For any realization \((x_1,\,\ldots,\,x_n) \in \XX^n\) of the sample~\(X,\) the corresponding realization~\(\mle\) of~\(\r\theta\) is called the \textbf{maximum likelihood estimate (MLE)} for the data~\((x_1,\,\ldots,\,x_n).\)
+  \end{definition}
+
+  \begin{example}
+    Let~\(\XX = \R^m\) and consider a rational curve~\(C\) in~\(\XX\), given by a polynomial parametrization~\(g = (g_1,\,\ldots,\,g_m):\:\R \to \R^m.\) Define a model
+    \[
+      M_\Theta = \{\ND(\mu,I_m):\:\mu = g(t)\}_{t\in \R},
+    \]
+    where~\(\ND(\mu,\Sigma)\) denotes the multivariate normal distribution with parameters~\(\mu \in \R^m,\) \(\Sigma \in \R^{m\times m}\), which can be defined by its density function
+    \[
+      f(\x) = \frac{1}{\sqrt{(2\pi)^k |\Sigma|}}  \exp\left(-\frac{1}{2} (\x - \mu)^T \Sigma^{-1} (\x - \mathbf{\mu})\right),\quad \x \in \R^m.
+    \]
+    Then for some constant~\(C,\)
+    \[
+      \ell_n(t) = -\frac{n}{2}\norm{g(t) - \frac{1}{n}\sum_{i=1}^n \X{i}}_2 + C.
+    \]
+    Observe that~\(\ell_n(t)\) is a polynomial in~\(\R[t],\) so we may use algebraic methods to describe the MLE. Let~\((\cdot)'\) denote the (formal) derivative of a polynomial, then
+    \[
+      \mle[t] \in \V(\langle \ell_n'\rangle).
+    \] 
+
+    The example file \code{gaussian-models.m2} demonstrates a realization this method.
+  \end{example}
+  \section{Implicit models}
+  In this section we will consider the distributions on a finite set \(\XX = \{a_1,\,\ldots,\,a_k\}\). We assume that each value has a nonzero probability. 
+
+  The probability measures~\(P\) on~\(\XX\) are in one-to-one correspondence with vectors \(\p \in (0,1)^k\) of probabilities:~\(\p = (p_1,\,\ldots,\,p_k) \subseteq [0,1]^k,\,\sum p_i = 1.\) We will write~\(P = P_{\p}\) if~\(P(a_i) = p_i\) for all~\(i \le k.\)
+ 
+  We may describe any probability vector \(\p\) algebraically using polynomials in the ring~\(\R[x_1,\,\ldots,\,x_k].\) First observe that 
+  \[
+    \p \in \od_{k-1} := (0,\infty)^k \cap \V\left(\sum_{i=1}^k x_i - 1\right) \subseteq \R^k.
+  \]
+  Let us identify~\(\od_{k-1}\) with the subset of the complex projective space \(\P^{k-1}(\C):\)
+  \[
+    \od_{k-1} = \{(p_1:\ldots:p_k):\:\Re p_i >0,\,\Im p_i = 0\ \forall i \le k\} \subseteq \P^{k-1}(\C).
+  \]
+  Then any projective variety in~\(\P^{k-1}(\C)\) defines a set of probability vectors. We will consider the varieties of the form~\(\V(I)\) where \(I \subseteq \R[x_1,\,\ldots,\,x_k]\)  is a  homogenous prime ideal that satisfies the reqularity condition
+  \begin{equation}\label{eq:regularity}
+    \V(I) = \overline{\V_{\od_{k-1}}(I)} =  \V(\I(\V(I)\cap \od_{k-1})).
+  \end{equation}
+
+  \begin{definition}
+    Let~\(I \subseteq \R[x_1,\,\ldots,\,x_k]\)  be a  homogenous prime ideal satisfying \eqref{eq:regularity}. We define the \textbf{implicit model} \(\M(I)\) as the statistical model with the parameter~\(\p:\)
+    \[
+      \M(I) := \{P_{\p} \mid \p\in \V(I)\cap \od_{k-1}\}.
+    \]
+  \end{definition}
+
+  \begin{definition}
+    Let~\(X = \left(\X{i}\right)_{i\le n}\) be a sample distributed over~\(\XX = \{a_1,\,\ldots,\,a_k\}.\) The \textbf{vector of counts} is the random vector~\(\u\in \Z^k_{\ge 0},\) where 
+    \[
+      u_j = \#\left\{i \le n:\:\X{i} = a_j\right\},\quad j \le k.
+    \]
+    A \textbf{data vector} is a realization of \(\u\) for some realization~\((x_1,\,\ldots,\,x_n)\) of~\(X.\)
+  \end{definition}
+  Given a vector of counts~\(\u\), we may calculate the likelihood function of~\(X:\)
+  \[
+    L_X(\p) = \prod_{i=1}^n P_{\p}\left(\X{i}\right)
+      = \prod_{j=1}^k \prod_{\X{i} = a_i} P_{\p}\left(\X{i}\right)
+      = \prod_{j=1}^k \prod_{\X{i} = a_i} p_k =  p_1^{u_1}\cdots p_k^{u_k}.
+  \]
+  For any~\(\p\in \od_{k-1}\), \(L_X(\p)\) coincides with the rational function~\(f_{\u}:\:\P^{k-1}(\C)\dto \R,\) given by
+  \[
+    f_{\u}(p_1:\ldots:p_k) = \frac{p_1^{u_1}\cdots p_k^{u_k}}{(p_1+\ldots+p_k)^{n}}.
+  \]
+  It follows that the MLE for a given data vector~\(\u\) is a critical point of~\(f_{\u}\) inside~\(\V(I)\cap \od_{k-1}.\)
+
+  \begin{definition}
+    Given a homogenous prime ideal~\(I \subseteq \R[x_1,\,\ldots,\,x_k]\) satisfying \eqref{eq:regularity}, define
+    \[
+      \U(I) = \Vreg(I)\setminus \V(p_1\cdots p_k\cdot (p_1 + \ldots + p_k)).
+    \]
+    The \textbf{likelihood locus}~\(Z_{\u}(I)\) for a data vector~\(\u\) is the set of all vectors~\(\p\in \U(I)\) such that the gradient~\(f_{\u}'(\p)\) lies in the tangent space of~\(\V(I)\) at~\(\p.\) 
+
+
+  \end{definition}
+
+  \begin{definition}
+    If \(I = \langle g_1,\,\ldots,\,g_s\rangle,\) define the \textbf{augmented Jacobian matrix}~\(J(p)\) of~\(I\) by
+    \[
+      J(p) = 
+      \begin{pmatrix}
+      p_1 & p_2 & \cdots & p_k \\
+      p_1 \frac{\partial g_1}{\partial p_1} & p_2 \frac{\partial g_1}{\partial p_2} & \cdots & p_k \frac{\partial g_1}{\partial p_k} \\
+      p_1 \frac{\partial g_2}{\partial p_1} & p_2 \frac{\partial g_2}{\partial p_2} & \cdots & p_k \frac{\partial g_2}{\partial p_k} \\
+      \vdots & \vdots & \ddots & \vdots \\
+      p_1 \frac{\partial g_s}{\partial p_1} & p_2 \frac{\partial g_s}{\partial p_2} & \cdots & p_k \frac{\partial g_s}{\partial p_k} \\
+      \end{pmatrix}
+    \]
+  \end{definition}
+
+  \begin{proposition}\label{prop:1}
+    A vector \(\p \in \U(I)\) is in the likelihood locus \(Z_{\u}\) if and only if the data vector \(\u\) lies in the row span of the augmented Jacobian matrix \(J(p).\)
+  \end{proposition}
+
+  Recall that the kernel of a matrix is the orthogonal complement of its row span. Then \(Z_u\) lies in the variety of the ideal\(\langle \u,\vec{\varphi}(p):\:\vec{\varphi}(p)\in \ker J(p)\rangle.\)
+
+  The example file \code{likelihood-ideal.m2} shows an application of \ref{prop:1}: we calculate a basis for the ideal~\(I_{\u}\) of the likelihood locus~\(Z_{\u}\) and use numeric methods to find the variety of~\(I_{\u}.\) The we may check each of the resulting points using the Hessian test for critical points.
+
+
+
+\end{document}
